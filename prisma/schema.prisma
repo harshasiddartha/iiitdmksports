@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id          String      @id @default(uuid())
+  clerkUserId String      @unique
+  email       String      @unique
+  name        String?
+  imageUrl    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  reservations Reservation[] // One-to-many relation with Reservation
+}
+
+model Reservation {
+  id              String   @id @default(uuid())
+  userId          String   // Foreign key referencing User model
+  sport           String?  // Name of the sport, optional
+  isGym           Boolean  // Indicates if the reservation is for a gym
+  price           Float    // Price for the reservation
+  reservationDate DateTime // Date and time of the reservation
+  slot            String?   // New field to store the time slot in "6:00-7:00" format
+  image           String?  // Change from imageUrl to image, for storing image file
+  gender          String?  // Optional gender field
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [clerkUserId])
+}
+
+
